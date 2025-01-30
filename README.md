@@ -36,7 +36,7 @@
 
 ## Relations BDD
 
-Les colonnes indiquants les relations ne sont volontairement pas indiquées, il faudra donc les modifier les models afin de gérer les liaisons ci dessous. ?!!!!!!
+Les colonnes indiquants les relations ne sont volontairement pas indiquées, il faudra donc les modifier les models afin de gérer les liaisons ci dessous. 
 
 User <-> Kiosk : One-to-one\
 User <-> Review : One-to-many\

@@ -13,39 +13,14 @@ class User extends Model {}
 
 User.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-      autoIncrement: true,},
-    firstname: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    lastname: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    countryCode: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE, 
-      allowNull: true,
-    },
-    updatedAt: {
-      type: DataTypes.DATE, 
-      allowNull: true,
-    },
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    firstname: { type: DataTypes.STRING },
+    lastname: { type: DataTypes.STRING },
+    countryCode: { type: DataTypes.STRING },
+    phone: { type: DataTypes.STRING },
+    password: { type: DataTypes.STRING },
+    createdAt: { type: DataTypes.DATE },
+    updatedAt: { type: DataTypes.DATE },
   },
   {
     sequelize,
@@ -56,52 +31,44 @@ User.init(
 );
 
 // Define AccessToken model
-class AccessToken extends Model {}
-
-AccessToken.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: false,
-      autoIncrement: true, 
-    },
-    ttl: {
-      type: DataTypes.INTEGER, 
-      allowNull: true,
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-      allowNull: true,
+const AccessToken = sequelize.define('AccessToken', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false, 
+    references: {
+      model: User, 
+      key: 'id',
     },
   },
-  {
-    sequelize,
-    modelName: "AccessToken",
-    tableName: "accessTokens",
-    timestamps: false,
-  }
-);
+  ttl: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+});
+
 
 // Define Review model
 class Review extends Model {}
 
 Review.init(
   {
-    id: {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    userId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
       allowNull: false,
-      autoIncrement: true, 
+      references: { model: User, key: "id" },
     },
-    comment: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    mark: {
-      type: DataTypes.INTEGER, 
-      allowNull: true,
-    },
+    comment: { type: DataTypes.STRING },
+    mark: { type: DataTypes.INTEGER },
   },
   {
     sequelize,
@@ -116,39 +83,45 @@ class Kiosk extends Model {}
 
 Kiosk.init(
   {
-    id: {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    userId: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
-      allowNull: true,
-      autoIncrement: true, 
-    },
-    comment: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    mark: {
-      type: DataTypes.INTEGER, 
       allowNull: false,
+      references: { model: User, key: "id" },
     },
+    comment: { type: DataTypes.STRING },
+    mark: { type: DataTypes.INTEGER, allowNull: false },
   },
   {
     sequelize,
     modelName: "Kiosk",
-    tableName: "kiosks", 
+    tableName: "kiosks",
     timestamps: false,
   }
 );
+
+// relationships
+User.hasOne(Kiosk, { foreignKey: "userId" });
+Kiosk.belongsTo(User);
+
+User.hasMany(Review, { foreignKey: "userId" });
+Review.belongsTo(User);
+
+User.hasMany(AccessToken, { foreignKey: "userId" });
+AccessToken.belongsTo(User);
 
 // Test the connection
 (async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-
-    console.log("Connection has been established successfully.");
+    console.log("Database connected successfully.");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
 })();
 
 export { sequelize, User, AccessToken, Review, Kiosk };
+
+
+

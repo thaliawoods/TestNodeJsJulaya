@@ -1,14 +1,14 @@
 import express from "express";
-import { User } from "./db.js";
+import authRoutes from "./routes/auth.js"; 
+
 const app = express();
-const port = 3000;
+app.use(express.json());
 
-app.get("/users/:id", async (req, res) => {
-  const { id } = req.params; // Extract id from request parameters
-  const user = await User.findByPk(id); // Find user by id);
-  res.send(user);
+app.use(authRoutes); 
+
+app.listen(3000, () => {
+  console.log("Server running at http://localhost:3000");
 });
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+
+
